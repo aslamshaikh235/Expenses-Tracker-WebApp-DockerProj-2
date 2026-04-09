@@ -1,0 +1,328 @@
+🚀 PROJECT OVERVIEW (What you will build)
+
+You will create a pipeline like this:
+
+Developer → GitHub → Jenkins CI →
+Maven Build → SonarQube Scan →
+Docker Build → Push to ECR →
+Deploy to EKS (Kubernetes) →
+Expose via ALB →
+Monitor via Prometheus + Grafana
+
+Infrastructure will be created using:
+👉 Terraform + Ansible
+👉 Hosted on AWS (VPC, EC2, EKS, etc.)
+------------------------------------------------------------------
+Step 1 - PREREQUISITES
+
+Make sure you have:
+
+AWS Account
+GitHub repo (you already have)
+VS Code (you cloned repo ✅)
+AWS CLI configured:
+
+▶️ RUN COMMANDS
+
+aws configure
+-- Accees key --
+-- Secret Key --
+-- us-east-1 --
+=- json --
+
+OR else if it alredy configured aws you check by running this COMMANDS
+aws sts get-caller-identity
+--------------------------------------------------------------------
+Step 2 - CREATE AWS INFRASTRUCTURE (Terraform)
+
+Create a folder Infra/terraform/
+
+Infra/terraform/
+│
+├── provider.tf
+├── vpc.tf
+├── subnets.tf
+├── igw.tf
+├── route-table.tf
+├── variables.tf
+├── outputs.tf
+
+👉 Terraform automatically reads all .tf files together
+👉 So you don’t need to “connect” them manually
+
+🧠 WHY THIS STRUCTURE IS BEST
+File	Purpose
+provider.tf	    AWS config
+variables.tf	reusable values
+vpc.tf	        core network
+subnets.tf	    network layers
+igw.tf	        internet
+route-table.tf	traffic routing
+outputs.tf	    debugging
+---------------------------------------------------------------
+Step 3 - ▶️ RUN COMMANDS
+
+terraform init
+terraform plan
+terraform apply
+
+🧠 WHAT WILL BE CREATED
+
+After apply, AWS will have:
+
+🌐 Networking
+VPC (10.0.0.0/16)
+2 Public Subnets
+2 Private Subnets
+🌍 Internet Access
+Internet Gateway
+Route Table
+
+👉 This is production-level base network for EKS + ALB
+
+🔍 AFTER APPLY (VERIFY)
+
+Go to AWS Console → VPC
+
+Check:
+
+VPC exists ✅
+Subnets (4 total) ✅
+IGW attached ✅
+
+🧠 HOW TO IDENTIFY WHAT IS NEEDED?
+
+This is the most important question you asked 👇
+
+🎯 Think from FINAL GOAL
+
+You want:
+
+User → ALB → Kubernetes (EKS) → App
+👉 Then break it down:
+1. Need network?
+
+✔ Yes → VPC
+
+2. Need internet access?
+
+✔ Yes → IGW + Public Subnets
+
+3. Need secure backend?
+
+✔ Yes → Private Subnets
+
+4. Need load balancer?
+
+✔ Yes → Public Subnets (2 AZ required)
+
+5. Need Kubernetes?
+
+✔ Yes → Private Subnets (best practice)
+
+👉 That’s how DevOps engineers think
+
+🧠 FINAL ARCHITECTURE YOU BUILT
+VPC
+├── Public Subnet 1 (ALB)
+├── Public Subnet 2 (ALB)
+├── Private Subnet 1 (EKS)
+├── Private Subnet 2 (EKS)
+└── Internet Gateway
+🔥 WHAT YOU JUST BUILT (IMPORTANT)
+
+👉 This is production-grade AWS networking
+
+Not beginner level anymore 🔥
+-----------------------------------------------------------------
+Step 4 - 🚀 EC2 + IAM + JENKINS SETUP
+
+🖥️ Create EC2 instance (via Terraform)
+
+Create a file ec2.tf on Infra/terraform
+Write a code to create a ec2 instance via terraform
+
+🔓 Security Group
+Port 22 (SSH)
+Port 8080 (Jenkins)*/
+
+terraform plan
+terraform apply
+
+🔍 REAL RESULT IN AWS
+After terraform apply:
+Go to AWS:
+
+EC2 → instance running ✅
+Public IP available ✅
+Security group attached ✅
+
+🧠 FINAL ARCHITECTURE
+Internet
+   ↓
+Security Group (22, 8080 open)
+   ↓
+EC2 (Jenkins Server)
+   ↓
+Public Subnet
+   ↓
+VPC
+---------------------------------------------
+Step 5 - Install Ansible on wsl ubuntu 
+
+
+sudo apt update
+sudo apt install ansible -y
+ansible --version
+ansible-playbook --version
+
+Create a ansible folder on Infra 
+Create file inventory.ini
+Create File install-tools.yml
+
+Write a code on both the file and save
+
+👉 Step 1: Go to home
+cd ~
+👉 Step 2: Create a shortcut (symbolic link)
+ln -s /mnt/c/Users/SUPER/Expenses-Tracker-App/Expenses-Tracker-WebApp-DockerProj-2 project
+👉 Now you can just do:
+cd project/Infra/ansible
+
+# 👉 Step 1: Copy key into WSL home
+cp /mnt/c/Users/SUPER/.ssh/JENKINS-APP-KEY.pem ~/
+# 👉 Step 2: Fix permission (IMPORTANT)
+chmod 400 ~/JENKINS-APP-KEY.pem
+👉 Step 3: Verify
+ls -l ~/JENKINS-APP-KEY.pem
+👉 Step 4: Update inventory.ini
+
+▶️ RUN AGAIN
+ansible-playbook -i inventory.ini install-tools.yml
+
+After Success Open:
+http://34.236.254.231:8080
+
+-----------------------------------------------------------
+
+Step 6 - Login to Jenkins 
+http://44.200.204.27:8080
+
+Run command 
+sudo cat /var/lib/jenkins/secrets/initialAdminPassword
+
+Password - d0d63bbd7c944495ad2bb72b9f017a70
+
+Install Suggested Plugin
+
+Username - jenkinsadmin
+Pass - Aslam_235
+Fullname - jenkinsasladmin
+url : http://44.200.204.27:8080/
+email - aslamshaikh235@gmail.com
+
+Start using Jenkins
+
+Install Required Plugins
+
+Go to:
+
+👉 Manage Jenkins → Plugins → Available plugins
+
+Install:
+
+Git Plugin ✅
+Pipeline ✅
+Maven Integration ✅
+
+Create first job 
+-> new item
+-> Name - expenses app
+-> freestyle project
+click ok
+
+Connect to Github repo 
+source code management -> Git
+URL - https://github.com/aslamshaikh235/Expenses-Tracker-WebApp-DockerProj-2.git
+Branch - */main 
+
+Add build step 
+Build
+write - clean package -DskipTests 
+
+What it Does->
+Downloads code 
+Build Project 
+Creates .jar file
+
+Check outputs
+Build Now
+
+Results
+Jenkins pulled you github codes 
+Built your java project 
+Created artifact(.jar) 
+
+-----------------------------------------------------------------
+
+Step - 7 - for check application is running or not 
+
+Your app is a Spring Boot project → it creates a .jar
+
+👉 On EC2 (SSH):
+
+cd /var/lib/jenkins/workspace/expenses-app/target
+ls
+
+You should see something like:
+ExpensesTracker-0.0.1-SNAPSHOT.jar
+
+Your app is a Spring Boot project → it creates a .jar
+
+Run it manually first:
+
+java -jar ExpensesTracker-0.0.1-SNAPSHOT.jar
+
+ExpensesTracker-0.0.1-SNAPSHOT.jar
+
+Go to Jenkins
+
+Job->Configure->Buid steps->Execute shell
+
+cd target
+nohup java -jar *.jar > app.log 2>&1 &
+
+Save -> Build now
+
+🧠 WHAT THIS DOES
+Command	Meaning
+nohup    -	 run in background
+*.jar	   -   auto pick jar
+app.log	-   logs stored
+&	      -   run async
+
+🚀 FINAL FLOW
+Now Jenkins will:
+Pull code
+Build project
+Run your app
+
+👉 This is CI + basic CD
+-----------------------------------------------------------------------
+🔥 NEXT LEVEL (COMING)
+After this we can go:
+
+👉 Dockerize app 🐳
+👉 Deploy container
+👉 Setup webhook (auto trigger)
+👉 Full CI/CD pipeline
+
+Step 8 - 
+
+
+
+
+
+
+
+
