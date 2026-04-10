@@ -317,7 +317,69 @@ After this we can go:
 👉 Setup webhook (auto trigger)
 👉 Full CI/CD pipeline
 
-Step 8 - 
+Step 8 - Create a Dockerfile and push to github repo
+
+to push docker file firsh used of SSH Key 
+to create a ssh key
+Configure to create a ssh key 🔑 
+First RUN - 
+Enter file in which to save the key (/home/aslamtheway/.ssh/id_ed25519):
+
+Passphrase:
+Enter
+
+Confirm passphrase:
+Enter 
+
+For ssh key:
+cat ~/.ssh/id_ed25519.pub
+
+🔑 ADD TO GITHUB
+Go:
+👉 https://github.com/settings/keys
+👉 Click New SSH key
+👉 Paste → Save
+
+To check remote:
+git remote -v
+
+Set remote:
+git remote set-url origin git@github.com:aslamshaikh235/Expenses-Tracker-WebApp-DockerProj-2.git
+
+Test:
+ssh -T git@github.com
+
+Output:
+Hi aslamshaikh235! You've successfully authenticated
+
+Open .gitignore
+nano .gitignore
+
+Add this:
+# Ignore Infra (terraform + ansible)
+Infra/
+
+Save:
+Ctrl O
+Enter
+Exit:
+Ctrl D
+
+Got remove infra
+git rm -r --cached Infra
+
+rm -rf .git
+git init
+git add .
+git commit -m "Fresh clean repo"
+git branch -M maingit commit -m "Fresh clean repo"
+git remote add origin git@github.com:aslamshaikh235/Expenses-Tracker-WebApp-DockerProj-2.git
+git push -f origin main
+--------------------------------------------------------------------------------
+
+Step 9 - 
+
+
 
 
 
