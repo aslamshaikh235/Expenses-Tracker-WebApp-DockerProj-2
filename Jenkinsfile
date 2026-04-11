@@ -12,14 +12,32 @@ pipeline {
     }
 
     stages {
-        
-        stage("Checkout code") {
+
+        stage('Clean Workspace') {
             steps {
-                git branch: 'main', url:"https://github.com/aslamshaikh235/Expenses-Tracker-WebApp-DockerProj-2.git"
+                deleteDir()
             }
         }
 
-        stage('Build with Mave') {
+        stage('Checkout Code') {
+            steps {
+                git branch: 'main', url: "https://github.com/aslamshaikh235/Expenses-Tracker-WebApp-DockerProj-2.git"
+            }
+        }
+
+        stage('Debug Files') {
+            steps {
+                sh '''
+                echo "===== FILES IN k8s FOLDER ====="
+                ls -l k8s/
+
+                echo "===== PRINTING deployment.yml ====="
+                cat k8s/deployment.yml
+                '''
+            }
+        }
+
+        stage('Build with Maven') {
             steps {
                 sh 'mvn clean package -DskipTests'
             }
@@ -59,25 +77,27 @@ pipeline {
         stage('Deploy to Kubernetes') {
             steps {
                 sh '''
-                echo "Deploying to EKS..."
+                echo "===== CONNECTING TO EKS ====="
+                aws eks update-kubeconfig --region us-east-1 --name expenses-cluster
 
-                # Apply deployment
+                echo "===== VALIDATING YAML ====="
+                kubectl apply --dry-run=client -f k8s/deployment.yml
+
+                echo "===== DEPLOYING ====="
                 kubectl apply -f k8s/deployment.yml
-
-                # Apply service
                 kubectl apply -f k8s/service.yml
 
-                # Verify
+                echo "===== VERIFY ====="
                 kubectl get pods
                 kubectl get svc
                 '''
             }
         }
-    } 
+    }
 
     post {
         success {
-            echo  "Pipeline SUCCESS 🚀"
+            echo "Pipeline SUCCESS 🚀"
         }
         failure {
             echo "Pipeline FAILED ❌"
