@@ -67,8 +67,8 @@ pipeline {
                 kubectl apply -f k8s/service/yml
                 '''
             }
-        }
-    } */
+        } */
+    } 
 
     post {
         success {
