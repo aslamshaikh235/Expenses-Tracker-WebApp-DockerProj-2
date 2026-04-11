@@ -13,9 +13,13 @@ spec:
         app: expenses
     spec:
       containers:
-      - name: expenses-container
-        image: aslamshaikh235/expenses-app:latest
-        imagePullPolicy: Always
+        - name: expenses-app
+          image: aslamshaikh235/expenses-app:latest
+          imagePullPolicy: Always
           ports:
-          - containerPort: 8080
-
+            - containerPort: 8080
+          env:
+            - name: DB_USER
+              value: "root"
+            - name: DB_PASS
+              value: "root"
