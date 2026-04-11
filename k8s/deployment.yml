@@ -15,6 +15,7 @@ spec:
       containers:
       - name: expenses-container
         image: aslamshaikh235/expenses-app:latest
+        imagePullPolicy: Always
           ports:
           - containerPort: 8080
 
