@@ -45,7 +45,7 @@ pipeline {
             }
         }
 
-        Stage('Push to DockerHub') {
+        stage('Push to DockerHub') {
             steps {
                 withCredentials([usernamePassword(credentialsId: 'docker-creds', usernameVariable:'DOCKER_USER', passwordVariable:'DOCKER_PASS')]) {
                     sh '''
@@ -56,7 +56,7 @@ pipeline {
             }
         }
 
-        // 👇 Add this AFTER EKS is ready
+        /* 👇 Add this AFTER EKS is ready
         stage('Deploy to EKS') {
             when {
                 expression { return false } // disable for now
@@ -68,7 +68,7 @@ pipeline {
                 '''
             }
         }
-    }
+    } */
 
     post {
         success {
