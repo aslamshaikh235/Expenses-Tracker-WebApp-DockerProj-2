@@ -56,18 +56,23 @@ pipeline {
             }
         }
 
-        /* 👇 Add this AFTER EKS is ready
-        stage('Deploy to EKS') {
-            when {
-                expression { return false } // disable for now
-            }
+        stage('Deploy to Kubernetes') {
             steps {
                 sh '''
+                echo "Deploying to EKS..."
+
+                # Apply deployment
                 kubectl apply -f k8s/deployment.yml
-                kubectl apply -f k8s/service/yml
+
+                # Apply service
+                kubectl apply -f k8s/service.yml
+
+                # Verify
+                kubectl get pods
+                kubectl get svc
                 '''
             }
-        } */
+        }
     } 
 
     post {
